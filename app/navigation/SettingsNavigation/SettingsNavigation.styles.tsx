@@ -103,4 +103,9 @@ export default StyleSheet.create({
     marginBottom: -20,
     alignItems: 'center',
   },
+  passwordEntry: {
+    ...mixins.input,
+    width: '100%',
+    marginBottom: 6,
+  },
 });

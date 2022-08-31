@@ -14,6 +14,7 @@ import walletImage from '../../assets/wallet.png';
 import { theme, mixins } from '../../styles';
 import styles from './SettingsNavigation.styles';
 import { NavHeader, ConfirmModal } from '../../components';
+import { SafeScreenView, PasswordInput } from '../../components';
 import { lock, reset, getAllCredentials } from '../../store/slices/wallet';
 import { getAllDidRecords } from '../../store/slices/did';
 import {
@@ -24,8 +25,11 @@ import {
   BackupProps,
   AboutProps,
 } from '../';
-import { exportWallet } from '../../lib/export';
+import { exportWallet, exportWalletEncrypted } from '../../lib/export';
 import { importWallet } from '../../lib/import';
+
+
+import { useAccessibilityFocus } from '../../hooks';
 
 const Stack = createStackNavigator();
 
@@ -64,6 +68,7 @@ function Settings({ navigation }: SettingsProps): JSX.Element {
       <View style={styles.settingsContainer}>
         <SettingsItem title="Restore" onPress={() => navigation.navigate('Restore')} />
         <SettingsItem title="Backup" onPress={() => navigation.navigate('Backup')} />
+        <SettingsItem title="Encrypted Backup" onPress={() => navigation.navigate('EncryptedBackup')} />
         <SettingsItem title="Reset wallet" onPress={() => setResetModalOpen(true)} />
         <SettingsItem title="About" onPress={() => navigation.navigate('About')} />
         <SettingsItem title="Sign out" onPress={lockWallet} />
@@ -207,6 +212,54 @@ function Backup({ navigation }: BackupProps): JSX.Element {
   );
 }
 
+function EncryptedBackup({navigation}: BackupProps): JSX.Element {
+  const [password, setPassword] = useState('');
+  const [passwordRef, focusPassword] = useAccessibilityFocus<View>();
+
+  const _exportEncrypted = async () => {
+    console.log("SettingsNavigation.EncryptedBack");
+    exportWalletEncrypted(password);
+  };
+
+  return (
+    <>
+      <NavHeader goBack={() => navigation.navigate('Settings')} title="Encrypted Backup" />
+      <View style={styles.bodyContainer}>
+        <Text style={styles.paragraph}>This will encrypt and export your wallet contents into a file for you to download.</Text>
+
+        <SafeScreenView style={styles.container}>
+          <Text style={styles.paragraph}>
+            Enter your passphrase. This will be used to decrypt your backup.
+          </Text>
+          <PasswordInput
+            ref={passwordRef}
+            style={styles.passwordEntry}
+            label="Password"
+            value={password}
+            onChangeText={setPassword}
+            onSubmitEditing={_exportEncrypted}
+          />
+        </SafeScreenView>
+        <Button
+          onPress={_exportEncrypted}
+          title="Export Wallet"
+          containerStyle={styles.buttonContainer}
+          buttonStyle={mixins.buttonIcon}
+          titleStyle={mixins.buttonIconTitle}
+          iconRight
+          icon={
+            <MaterialIcons
+              name="file-download"
+              size={theme.iconSize}
+              color={theme.color.iconInactive}
+            />
+          }
+        />
+      </View>
+    </>
+  );
+}
+
 function About({ navigation }: AboutProps): JSX.Element {
   const version = DeviceInfo.getVersion();
   const buildNumber = DeviceInfo.getBuildNumber();
@@ -254,6 +307,7 @@ export default function SettingsNavigation(): JSX.Element {
       <Stack.Screen name="Restore" component={Restore} />
       <Stack.Screen name="RestoreDetails" component={RestoreDetails} />
       <Stack.Screen name="Backup" component={Backup} />
+      <Stack.Screen name="EncryptedBackup" component={EncryptedBackup} />
       <Stack.Screen name="About" component={About} />
     </Stack.Navigator>
   );

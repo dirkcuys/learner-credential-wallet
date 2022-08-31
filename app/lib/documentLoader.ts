@@ -60,8 +60,8 @@ export function securityLoader() {
 
   loader.addStatic(dccCtx.CONTEXT_URL_V1, dccCtx.CONTEXT_V1);
   loader.addStatic(obCtx.CONTEXT_URL_V3, obCtx.CONTEXT_V3);
-  loader.addStatic(obCtx.CONTEXT_URL_V3_JFF_V1, obCtx.CONTEXT_V3);
-  loader.addStatic(obCtx.CONTEXT_URL_V3_IMS, obCtx.CONTEXT_V3);
+  //loader.addStatic(obCtx.CONTEXT_URL_V3_JFF_V1, obCtx.CONTEXT_V3);
+  //loader.addStatic(obCtx.CONTEXT_URL_V3_IMS, obCtx.CONTEXT_V3);
 
   loader.setDidResolver(resolver);
 
